@@ -1,0 +1,16 @@
+<!-- templates/main/add_student.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Student</title>
+</head>
+<body>
+    <h1>Add Student</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Student</button>
+    </form>
+    <a href="{% url 'index' %}">Back to List</a>
+</body>
+</html>
