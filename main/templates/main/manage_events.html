@@ -1,0 +1,32 @@
+<!-- main/templates/main/manage_events.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Events</title>
+</head>
+<body>
+    <h1>Manage Events</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Event Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>{{ event.event_name }}</td>
+                <td>{{ event.event_date }}</td>
+                <td>
+                    <a href="{% url 'edit_event' event.id %}">Edit</a>
+                    <a href="{% url 'delete_event' event.id %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'add_event' %}">Add New Event</a>
+</body>
+</html>

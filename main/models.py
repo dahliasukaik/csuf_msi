@@ -19,10 +19,15 @@ class Event(models.Model):
         return self.event_name
 
 class Attendance(models.Model):
+    STATUS_CHOICES = [
+        ('Present', 'Present'),
+        ('Absent', 'Absent'),
+        ('Excused', 'Excused'),
+    ]
+
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    attendance_date = models.DateField()
-    status = models.CharField(max_length=20)  # e.g., Present, Absent
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
 
     def __str__(self):
         return f"{self.student} - {self.event} - {self.status}"

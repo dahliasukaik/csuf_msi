@@ -14,8 +14,10 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
-    list_display = ('student', 'event', 'attendance_date', 'status')
+    list_display = ('student', 'event', 'status')
     search_fields = ('student__first_name', 'student__last_name', 'event__event_name')
+
+
 
 @admin.register(Alumni)
 class AlumniAdmin(admin.ModelAdmin):

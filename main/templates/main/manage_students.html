@@ -1,14 +1,13 @@
-<!-- templates/main/index.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student List</title>
+    <title>Manage Students</title>
 </head>
 <body>
-    <h1>Student List</h1>
+    <h1>Manage Students</h1>
     <ul>
         {% for student in students %}
-        <li>{{ student.first_name }} {{ student.last_name }}</li>
+        <li>{{ student.first_name }} {{ student.last_name }} - {{ student.email }}</li>
         {% endfor %}
     </ul>
     <a href="{% url 'add_student' %}">Add Student</a>

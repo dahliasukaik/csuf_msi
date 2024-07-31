@@ -1,0 +1,56 @@
+<!-- main/templates/main/take_attendance.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Take Attendance</title>
+    <style>
+        .student-group {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Take Attendance</h1>
+    <form method="post" id="attendanceForm">
+        {% csrf_token %}
+        <div>
+            <label for="id_event">Event:</label>
+            {{ form.event }}
+        </div>
+        <div id="students">
+            <div class="student-group">
+                <input type="text" name="first_name" placeholder="First Name" required>
+                <input type="text" name="last_name" placeholder="Last Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <select name="status" required>
+                    <option value="Present">Present</option>
+                    <option value="Absent">Absent</option>
+                    <option value="Excused">Excused</option>
+                </select>
+                <button type="button" onclick="removeStudent(this)">Remove</button>
+            </div>
+        </div>
+        <button type="button" onclick="addStudent()">Add Another Student</button>
+        <button type="submit">Submit Attendance</button>
+    </form>
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+
+    <script>
+        function addStudent() {
+            var newStudent = document.querySelector('.student-group').cloneNode(true);
+            newStudent.querySelector('input[name="first_name"]').value = '';
+            newStudent.querySelector('input[name="last_name"]').value = '';
+            newStudent.querySelector('input[name="email"]').value = '';
+            newStudent.querySelector('select[name="status"]').selectedIndex = 0;
+            document.getElementById('students').appendChild(newStudent);
+        }
+
+        function removeStudent(button) {
+            var studentGroup = button.parentNode;
+            document.getElementById('students').removeChild(studentGroup);
+        }
+    </script>
+</body>
+</html>
+
+

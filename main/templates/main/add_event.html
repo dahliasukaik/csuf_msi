@@ -1,0 +1,17 @@
+<!-- main/templates/main/add_event.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Event</title>
+</head>
+<body>
+    <h1>Add Event</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Event</button>
+    </form>
+    <a href="{% url 'manage_events' %}">Back to Events</a>
+</body>
+</html>
+
