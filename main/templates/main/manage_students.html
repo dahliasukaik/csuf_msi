@@ -2,14 +2,38 @@
 <html>
 <head>
     <title>Manage Students</title>
+    <!-- Include Bootstrap for styling (optional) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Manage Students</h1>
-    <ul>
-        {% for student in students %}
-        <li>{{ student.first_name }} {{ student.last_name }} - {{ student.email }}</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'add_student' %}">Add Student</a>
+    <div class="container">
+        <h1>Manage Students</h1>
+        
+        <!-- Display Messages -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <!-- Bulk Upload Form -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+        
+        <h2>Current Students</h2>
+        <ul>
+            {% for student in students %}
+            <li>{{ student.first_name }} {{ student.last_name }} - {{ student.email }}</li>
+            {% endfor %}
+        </ul>
+        
+        <a href="{% url 'add_student' %}" class="btn btn-success">Add Student</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
 </body>
 </html>

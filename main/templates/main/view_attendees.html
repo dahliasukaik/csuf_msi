@@ -1,0 +1,15 @@
+{% extends "main/base.html" %}
+
+{% block title %}Attendees for {{ event.event_name }}{% endblock %}
+
+{% block content %}
+<h1>Attendees for {{ event.event_name }}</h1>
+<ul>
+    {% for attendance in attendees %}
+        <li>{{ attendance.student.first_name }} {{ attendance.student.last_name }} - {{ attendance.status }}</li>
+    {% endfor %}
+</ul>
+
+<!-- Back to Events Button -->
+<a href="{% url 'manage_events' %}" class="btn btn-secondary">Back to Events</a>
+{% endblock %}

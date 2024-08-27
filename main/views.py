@@ -1,13 +1,11 @@
-
-# main/views.py
 import csv
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import FileSystemStorage
 from .models import Attendance, Event, Student
 from .forms import AttendanceForm, EventForm, StudentForm, BulkUploadForm
 from django.contrib import messages
 
-def bulk_upload_students(request):
+def manage_students(request):
     if request.method == 'POST':
         form = BulkUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -19,11 +17,9 @@ def bulk_upload_students(request):
             try:
                 with open(file_path, newline='', encoding='utf-8') as csvfile:
                     reader = csv.reader(csvfile)
-                    # Skip the header row if your file has one
-                    next(reader, None)
+                    next(reader, None)  # Skip header row if present
                     for row in reader:
                         first_name, last_name, email = row
-                        # Check for existing email to prevent duplicates
                         if not Student.objects.filter(email=email).exists():
                             Student.objects.create(
                                 first_name=first_name,
@@ -36,13 +32,23 @@ def bulk_upload_students(request):
             except Exception as e:
                 messages.error(request, f"An error occurred while processing the file: {e}")
             
-            return redirect('dashboard')
+            return redirect('manage_students')
     else:
         form = BulkUploadForm()
-    return render(request, 'main/bulk_upload.html', {'form': form})
+
+    students = Student.objects.all()
+    return render(request, 'main/manage_students.html', {'form': form, 'students': students})
+
+
+def view_attendees(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    attendees = Attendance.objects.filter(event=event)
+    return render(request, 'main/view_attendees.html', {'event': event, 'attendees': attendees})
+
 
 def dashboard(request):
     return render(request, 'main/dashboard.html')
+
 
 def take_attendance(request):
     if request.method == 'POST':
@@ -78,6 +84,7 @@ def take_attendance(request):
 
     return render(request, 'main/take_attendance.html', {'form': form})
 
+
 def attendance_success(request):
     return render(request, 'main/attendance_success.html')
 
@@ -92,9 +99,6 @@ def add_event(request):
         form = EventForm()
     return render(request, 'main/add_event.html', {'form': form})
 
-def manage_students(request):
-    students = Student.objects.all()
-    return render(request, 'main/manage_students.html', {'students': students})
 
 def add_student(request):
     if request.method == 'POST':
@@ -107,11 +111,10 @@ def add_student(request):
     return render(request, 'main/add_student.html', {'form': form})
 
 
-
-
 def manage_events(request):
     events = Event.objects.all()
     return render(request, 'main/manage_events.html', {'events': events})
+
 
 def edit_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
@@ -124,10 +127,12 @@ def edit_event(request, event_id):
         form = EventForm(instance=event)
     return render(request, 'main/edit_event.html', {'form': form})
 
+
 def delete_event(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     if request.method == 'POST':
         event.delete()
         return redirect('manage_events')
     return render(request, 'main/delete_event.html', {'event': event})
+
 

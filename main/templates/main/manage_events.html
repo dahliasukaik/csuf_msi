@@ -22,11 +22,13 @@
                 <td>
                     <a href="{% url 'edit_event' event.id %}">Edit</a>
                     <a href="{% url 'delete_event' event.id %}">Delete</a>
+                    <a href="{% url 'view_attendees' event.id %}" class="btn btn-primary">View Attendees</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     <a href="{% url 'add_event' %}">Add New Event</a>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
 </body>
 </html>
