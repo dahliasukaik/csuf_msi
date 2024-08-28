@@ -1,9 +1,52 @@
 import csv
+import chardet
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import FileSystemStorage
 from .models import Attendance, Event, Student
 from .forms import AttendanceForm, EventForm, StudentForm, BulkUploadForm
 from django.contrib import messages
+
+
+
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event updated successfully.')
+            return redirect('manage_events')
+    else:
+        form = EventForm(instance=event)
+    return render(request, 'main/edit_event.html', {'form': form})
+
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    if request.method == 'POST':
+        event.delete()
+        messages.success(request, 'Event deleted successfully.')
+        return redirect('manage_events')
+    return render(request, 'main/delete_event.html', {'event': event})
+    
+def edit_student(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    if request.method == 'POST':
+        form = StudentForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Student information updated successfully.')
+            return redirect('manage_students')
+    else:
+        form = StudentForm(instance=student)
+    return render(request, 'main/edit_student.html', {'form': form})
+
+def delete_student(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    if request.method == 'POST':
+        student.delete()
+        messages.success(request, 'Student deleted successfully.')
+        return redirect('manage_students')
+    return render(request, 'main/delete_student.html', {'student': student})
 
 def manage_students(request):
     if request.method == 'POST':
@@ -15,20 +58,45 @@ def manage_students(request):
             file_path = fs.path(filename)
 
             try:
-                with open(file_path, newline='', encoding='utf-8') as csvfile:
-                    reader = csv.reader(csvfile)
-                    next(reader, None)  # Skip header row if present
-                    for row in reader:
-                        first_name, last_name, email = row
-                        if not Student.objects.filter(email=email).exists():
-                            Student.objects.create(
-                                first_name=first_name,
-                                last_name=last_name,
-                                email=email
-                            )
-                        else:
-                            messages.warning(request, f"Student with email {email} already exists.")
-                messages.success(request, "The students have been successfully uploaded.")
+                # Detect encoding
+                with open(file_path, 'rb') as rawfile:
+                    rawdata = rawfile.read(1000)
+                    result = chardet.detect(rawdata)
+                    encoding = result['encoding']
+
+                # Attempt to open with detected encoding
+                try:
+                    with open(file_path, newline='', encoding=encoding) as csvfile:
+                        reader = csv.reader(csvfile)
+                        next(reader, None)  # Skip header row if present
+                        for row in reader:
+                            first_name, last_name, email = row
+                            if not Student.objects.filter(email=email).exists():
+                                Student.objects.create(
+                                    first_name=first_name,
+                                    last_name=last_name,
+                                    email=email
+                                )
+                            else:
+                                messages.warning(request, f"Student with email {email} already exists.")
+                    messages.success(request, "The students have been successfully uploaded.")
+                
+                # Fallback to common encodings if the detected one fails
+                except UnicodeDecodeError:
+                    with open(file_path, newline='', encoding='ISO-8859-1') as csvfile:
+                        reader = csv.reader(csvfile)
+                        next(reader, None)  # Skip header row if present
+                        for row in reader:
+                            first_name, last_name, email = row
+                            if not Student.objects.filter(email=email).exists():
+                                Student.objects.create(
+                                    first_name=first_name,
+                                    last_name=last_name,
+                                    email=email
+                                )
+                            else:
+                                messages.warning(request, f"Student with email {email} already exists.")
+                    messages.success(request, "The students have been successfully uploaded with a fallback encoding.")
             except Exception as e:
                 messages.error(request, f"An error occurred while processing the file: {e}")
             
@@ -38,6 +106,7 @@ def manage_students(request):
 
     students = Student.objects.all()
     return render(request, 'main/manage_students.html', {'form': form, 'students': students})
+
 
 
 def view_attendees(request, event_id):

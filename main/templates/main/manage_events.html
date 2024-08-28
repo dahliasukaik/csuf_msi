@@ -3,32 +3,36 @@
 <html>
 <head>
     <title>Manage Events</title>
+    <!-- Include Bootstrap for styling (optional) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Manage Events</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Event Name</th>
-                <th>Event Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in events %}
-            <tr>
-                <td>{{ event.event_name }}</td>
-                <td>{{ event.event_date }}</td>
-                <td>
-                    <a href="{% url 'edit_event' event.id %}">Edit</a>
-                    <a href="{% url 'delete_event' event.id %}">Delete</a>
-                    <a href="{% url 'view_attendees' event.id %}" class="btn btn-primary">View Attendees</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'add_event' %}">Add New Event</a>
-    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    <div class="container">
+        <h1>Manage Events</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Event Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.event_name }}</td>
+                    <td>{{ event.event_date }}</td>
+                    <td>
+                        <a href="{% url 'edit_event' event.id %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'delete_event' event.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this event?');">Delete</a>
+                        <a href="{% url 'view_attendees' event.id %}" class="btn btn-primary btn-sm">View Attendees</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'add_event' %}" class="btn btn-success">Add New Event</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
 </body>
 </html>
